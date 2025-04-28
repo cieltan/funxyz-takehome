@@ -4,12 +4,13 @@ import SwapInput from "../input/SwapInput"
 import { ArrowDown } from "lucide-react"
 import BasicNeuButton from "../buttons/BasicNeuButton"
 import Gear from "../icons/Gear"
-import { useState } from "react"
 import { RootState } from "@/store"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
-import { SELECT_TOKEN, SOURCE, SwapSide, TARGET } from "@/utils/const"
+import { SOURCE, TARGET } from "@/utils/const"
+import { SELECT_TOKEN, SwapSide } from "@/utils/const"
 import { SwapContainerView } from "@/utils/const"
+import { setSourcePriceData, setTargetPriceData, setTokenSource, setTokenTarget } from "@/store/features/swapSlice"
 
 interface SwapDefaultViewProps {
     selectedSwapSide: SwapSide | null,
@@ -19,11 +20,17 @@ interface SwapDefaultViewProps {
 
 const SwapDefaultView = ({ setSelectedSwapSide, setView }: SwapDefaultViewProps) => {
     const iconSize = 32
-    const [firstInputType, setFirstInputType] = useState<SwapSide>(SOURCE)
-    const [secondInputType, setSecondInputType] = useState<SwapSide>(TARGET)
+    const dispatch = useDispatch()
 
-    const firstInputToken = useSelector((state: RootState) => firstInputType === SOURCE ? state.swap.source : state.swap.target)
-    const secondInputToken = useSelector((state: RootState) => secondInputType === TARGET ? state.swap.target : state.swap.source)
+    const sourceToken = useSelector((state: RootState) => state.swap.source)
+    const targetToken = useSelector((state: RootState) => state.swap.target)
+    const sourcePriceData = useSelector((state: RootState) => state.swap.sourcePriceData)
+    const targetPriceData = useSelector((state: RootState) => state.swap.targetPriceData)
+
+    const setSelectTokenView = (swapSide: SwapSide) => {
+        setView(SELECT_TOKEN)
+        setSelectedSwapSide(swapSide)
+    }
 
     return <>
         <div className="flex justify-end">
@@ -32,30 +39,30 @@ const SwapDefaultView = ({ setSelectedSwapSide, setView }: SwapDefaultViewProps)
             </BasicNeuButton>
         </div>
         <div className="flex justify-around items-center gap-3 w-full">
-            <SwapInput type={firstInputType} />
+            <SwapInput type={SOURCE} />
             <TokenSelectButton
-                selectedToken={firstInputToken}
+                selectedToken={sourceToken}
                 onClick={() => {
-                    setView(SELECT_TOKEN)
-                    setSelectedSwapSide(firstInputType)
+                    setSelectTokenView(SOURCE)
                 }}
             />
         </div>
         <div className="flex self-center">
             <BasicNeuButton onClick={() => {
-                setFirstInputType(secondInputType)
-                setSecondInputType(firstInputType)
+                dispatch(setTokenSource(targetToken))
+                dispatch(setTokenTarget(sourceToken))
+                dispatch(setSourcePriceData(targetPriceData))
+                dispatch(setTargetPriceData(sourcePriceData))
             }}>
                 <ArrowDown height={iconSize} width={iconSize} />
             </BasicNeuButton>
         </div>
         <div className="flex justify-around items-center gap-3 w-full">
-            <SwapInput type={secondInputType} />
+            <SwapInput type={TARGET} />
             <TokenSelectButton
-                selectedToken={secondInputToken}
+                selectedToken={targetToken}
                 onClick={() => {
-                    setView(SELECT_TOKEN)
-                    setSelectedSwapSide(secondInputType)
+                    setSelectTokenView(TARGET)
                 }}
             />
         </div>

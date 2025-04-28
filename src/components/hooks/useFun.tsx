@@ -3,6 +3,7 @@ import {
     getAssetPriceInfo,
 } from '@funkit/api-base'
 import { useState, useEffect } from 'react'
+import { TOKEN_CHAIN_MAP, Token } from '@/types/token'
 
 interface TokenData {
     tokenInfo: Awaited<ReturnType<typeof getAssetErc20ByChainAndSymbol>> | null;
@@ -12,16 +13,12 @@ interface TokenData {
 }
 
 interface UseFunProps {
-    chainId: string;
-    symbol: string;
-    tokenAddress: string;
+    symbol: Token | null;
     apiKey: string;
 }
 
 export const useFun = ({
-    chainId,
     symbol,
-    tokenAddress,
     apiKey
 }: UseFunProps): TokenData => {
     const [data, setData] = useState<TokenData>({
@@ -33,19 +30,29 @@ export const useFun = ({
 
     useEffect(() => {
         const fetchData = async () => {
+            if (!symbol || !(symbol in TOKEN_CHAIN_MAP)) {
+                setData({
+                    tokenInfo: null,
+                    price: null,
+                    loading: false,
+                    error: null
+                });
+                return;
+            }
+
             try {
-                const [tokenInfo, price] = await Promise.all([
-                    getAssetErc20ByChainAndSymbol({
-                        chainId,
-                        symbol,
-                        apiKey
-                    }),
-                    getAssetPriceInfo({
-                        chainId,
-                        assetTokenAddress: tokenAddress,
-                        apiKey
-                    })
-                ]);
+                const chainId = TOKEN_CHAIN_MAP[symbol];
+                const tokenInfo = await getAssetErc20ByChainAndSymbol({
+                    chainId: chainId.toString(),
+                    symbol,
+                    apiKey
+                });
+
+                const price = await getAssetPriceInfo({
+                    chainId: chainId.toString(),
+                    assetTokenAddress: tokenInfo.address,
+                    apiKey
+                });
 
                 setData({
                     tokenInfo,
@@ -63,7 +70,7 @@ export const useFun = ({
         };
 
         fetchData();
-    }, [chainId, symbol, tokenAddress, apiKey]);
+    }, [symbol, apiKey]);
 
     return data;
 }

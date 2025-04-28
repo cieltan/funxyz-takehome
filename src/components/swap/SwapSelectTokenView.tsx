@@ -1,10 +1,11 @@
 import { SwapContainerView, SwapSides } from "@/utils/const"
 import { TOKENS, Token, TOKEN_CHAIN_MAP } from "@/types/token"
-import { useAppDispatch } from "@/store/hooks"
-import { setTokenSource, setTokenTarget, setLoading, setError, setSourcePriceData, setTargetPriceData } from "@/store/features/swapSlice"
+import { useAppDispatch, useAppSelector } from "@/store/hooks"
+import { setTokenSource, setTokenTarget, setLoading, setError, setSourcePriceData, setTargetPriceData, updateTargetAmount, updateSourceAmount } from "@/store/features/swapSlice"
 import { ArrowLeft } from "lucide-react"
 import BasicNeuButton from "../buttons/BasicNeuButton"
 import { getAssetErc20ByChainAndSymbol, getAssetPriceInfo } from "@funkit/api-base"
+import { RootState } from "@/store"
 
 interface SwapSelectTokenViewProps {
     selectedSwapSide: typeof SwapSides[keyof typeof SwapSides]
@@ -13,9 +14,38 @@ interface SwapSelectTokenViewProps {
 
 const SwapSelectTokenView = ({ selectedSwapSide, setView }: SwapSelectTokenViewProps) => {
     const dispatch = useAppDispatch()
+    const source = useAppSelector((state: RootState) => state.swap.source)
+    const target = useAppSelector((state: RootState) => state.swap.target)
+    const sourcePriceData = useAppSelector((state: RootState) => state.swap.sourcePriceData)
+    const targetPriceData = useAppSelector((state: RootState) => state.swap.targetPriceData)
+
+    const checkIfTokenIsSelected = (token: Token) => {
+        if (selectedSwapSide === SwapSides.SOURCE) {
+            return source?.symbol === token
+        }
+        return target?.symbol === token
+    }
 
     const handleTokenSelect = async (token: Token) => {
         try {
+            const isSelected = checkIfTokenIsSelected(token)
+            if (isSelected) {
+                dispatch(setTokenSource(target))
+                dispatch(setTokenTarget(source))
+                dispatch(setSourcePriceData(targetPriceData))
+                dispatch(setTargetPriceData(sourcePriceData))
+                return
+            } else {
+                if (selectedSwapSide === SwapSides.SOURCE) {
+                    dispatch(setTokenSource(null))
+                    dispatch(setSourcePriceData(null))
+                    dispatch(updateSourceAmount(''))
+                } else {
+                    dispatch(setTokenTarget(null))
+                    dispatch(setTargetPriceData(null))
+                    dispatch(updateTargetAmount(''))
+                }
+            }
             dispatch(setLoading(true))
             const chainId = TOKEN_CHAIN_MAP[token]
             const apiKey = process.env.NEXT_PUBLIC_FUNXYZ_API_KEY

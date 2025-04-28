@@ -12,6 +12,8 @@ interface SwapState {
   sourcePriceData: PriceData | null;
   target: Erc20AssetInfo | null;
   targetPriceData: PriceData | null;
+  sourceAmount: string;
+  targetAmount: string;
   slippage: number;
   loading: boolean;
   error: string | null;
@@ -20,6 +22,8 @@ interface SwapState {
 const initialState: SwapState = {
   source: null,
   target: null,
+  sourceAmount: '',
+  targetAmount: '',
   slippage: 0.5, // Default 0.5%
   loading: false,
   error: null,
@@ -31,17 +35,23 @@ export const swapSlice = createSlice({
   name: 'swap',
   initialState,
   reducers: {
-    setTokenSource: (state, action: PayloadAction<Erc20AssetInfo>) => {
+    setTokenSource: (state, action: PayloadAction<Erc20AssetInfo| null>) => {
       state.source = action.payload
     },
-    setTokenTarget: (state, action: PayloadAction<Erc20AssetInfo>) => {
+    setTokenTarget: (state, action: PayloadAction<Erc20AssetInfo| null>) => {
       state.target = action.payload
     },
-    setSourcePriceData: (state, action: PayloadAction<PriceData>) => {
+    setSourcePriceData: (state, action: PayloadAction<PriceData| null>) => {
       state.sourcePriceData = action.payload
     },
-    setTargetPriceData: (state, action: PayloadAction<PriceData>) => {
+    setTargetPriceData: (state, action: PayloadAction<PriceData| null>) => {
       state.targetPriceData = action.payload
+    },
+    updateSourceAmount: (state, action: PayloadAction<string>) => {
+      state.sourceAmount = action.payload
+    },
+    updateTargetAmount: (state, action: PayloadAction<string>) => {
+      state.targetAmount = action.payload
     },
     setSlippage: (state, action: PayloadAction<number>) => {
       state.slippage = action.payload;
@@ -53,7 +63,8 @@ export const swapSlice = createSlice({
       state.error = action.payload;
     },
     resetSwapState: (state) => {
-      return initialState;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      state = initialState;
     },
   },
 });
@@ -63,6 +74,8 @@ export const {
   setTokenTarget,
   setSourcePriceData,
   setTargetPriceData,
+  updateSourceAmount,
+  updateTargetAmount,
   setSlippage,
   setLoading,
   setError,

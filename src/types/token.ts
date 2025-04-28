@@ -1,11 +1,16 @@
-export const TOKENS = {
-  USDC: 'USDC',
-  USDT: 'USDT',
-  ETH: 'ETH',
-  WBTC: 'WBTC'
+export const USDC = 'USDC';
+export const USDT = 'USDT';
+export const ETH = 'ETH';
+export const WBTC = 'WBTC';
+
+export const TOKENS_SYMBOL = {
+  USDC,
+  USDT,
+  ETH,
+  WBTC
 } as const;
 
-export type Token = typeof TOKENS[keyof typeof TOKENS];
+export type Token = typeof TOKENS_SYMBOL[keyof typeof TOKENS_SYMBOL];
 
 export const CHAIN_IDS = {
   ETHEREUM: 1,
@@ -16,10 +21,10 @@ export const CHAIN_IDS = {
 export type ChainId = typeof CHAIN_IDS[keyof typeof CHAIN_IDS];
 
 export const TOKEN_CHAIN_MAP: Record<Token, ChainId> = {
-  [TOKENS.USDC]: CHAIN_IDS.ETHEREUM,
-  [TOKENS.USDT]: CHAIN_IDS.POLYGON,
-  [TOKENS.ETH]: CHAIN_IDS.BASE,
-  [TOKENS.WBTC]: CHAIN_IDS.ETHEREUM
+  [USDC]: CHAIN_IDS.ETHEREUM,
+  [USDT]: CHAIN_IDS.POLYGON,
+  [ETH]: CHAIN_IDS.BASE,
+  [WBTC]: CHAIN_IDS.ETHEREUM
 };
 
 export type TokenAmount = {
@@ -33,7 +38,7 @@ export type ChainToken = {
 };
 
 export function isToken(value: string): value is Token {
-  return Object.values(TOKENS).includes(value as Token);
+  return Object.values(TOKENS_SYMBOL).includes(value as Token);
 }
 
 
