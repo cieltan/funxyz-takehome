@@ -1,5 +1,5 @@
 import { SwapContainerView, SwapSides } from "@/utils/const"
-import { TOKENS, Token, TOKEN_CHAIN_MAP } from "@/types/token"
+import { Token, TOKEN_CHAIN_MAP, TOKENS_SYMBOL } from "@/types/token"
 import { useAppDispatch, useAppSelector } from "@/store/hooks"
 import { setTokenSource, setTokenTarget, setLoading, setError, setSourcePriceData, setTargetPriceData, updateTargetAmount, updateSourceAmount } from "@/store/features/swapSlice"
 import { ArrowLeft } from "lucide-react"
@@ -39,11 +39,11 @@ const SwapSelectTokenView = ({ selectedSwapSide, setView }: SwapSelectTokenViewP
                 if (selectedSwapSide === SwapSides.SOURCE) {
                     dispatch(setTokenSource(null))
                     dispatch(setSourcePriceData(null))
-                    dispatch(updateSourceAmount(''))
+                    if (source !== null) dispatch(updateSourceAmount(''))
                 } else {
                     dispatch(setTokenTarget(null))
                     dispatch(setTargetPriceData(null))
-                    dispatch(updateTargetAmount(''))
+                    if (target !== null) dispatch(updateTargetAmount(''))
                 }
             }
             dispatch(setLoading(true))
@@ -95,7 +95,7 @@ const SwapSelectTokenView = ({ selectedSwapSide, setView }: SwapSelectTokenViewP
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {Object.values(TOKENS).map((token) => (
+                {Object.values(TOKENS_SYMBOL).map((token) => (
                     <BasicNeuButton
                         key={token}
                         onClick={() => handleTokenSelect(token)}

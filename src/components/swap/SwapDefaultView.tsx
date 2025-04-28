@@ -10,7 +10,8 @@ import { useDispatch, useSelector } from "react-redux"
 import { SOURCE, TARGET } from "@/utils/const"
 import { SELECT_TOKEN, SwapSide } from "@/utils/const"
 import { SwapContainerView } from "@/utils/const"
-import { setSourcePriceData, setTargetPriceData, setTokenSource, setTokenTarget } from "@/store/features/swapSlice"
+import { setSourcePriceData, setTargetPriceData, setTokenSource, setTokenTarget, updateSourceAmount, updateTargetAmount } from "@/store/features/swapSlice"
+import { Token } from "@/types/token"
 
 interface SwapDefaultViewProps {
     selectedSwapSide: SwapSide | null,
@@ -26,6 +27,8 @@ const SwapDefaultView = ({ setSelectedSwapSide, setView }: SwapDefaultViewProps)
     const targetToken = useSelector((state: RootState) => state.swap.target)
     const sourcePriceData = useSelector((state: RootState) => state.swap.sourcePriceData)
     const targetPriceData = useSelector((state: RootState) => state.swap.targetPriceData)
+    const sourceAmount = useSelector((state: RootState) => state.swap.sourceAmount)
+    const targetAmount = useSelector((state: RootState) => state.swap.targetAmount)
 
     const setSelectTokenView = (swapSide: SwapSide) => {
         setView(SELECT_TOKEN)
@@ -41,7 +44,7 @@ const SwapDefaultView = ({ setSelectedSwapSide, setView }: SwapDefaultViewProps)
         <div className="flex justify-around items-center gap-3 w-full">
             <SwapInput type={SOURCE} />
             <TokenSelectButton
-                selectedToken={sourceToken}
+                selectedToken={sourceToken?.symbol as Token}
                 onClick={() => {
                     setSelectTokenView(SOURCE)
                 }}
@@ -53,6 +56,8 @@ const SwapDefaultView = ({ setSelectedSwapSide, setView }: SwapDefaultViewProps)
                 dispatch(setTokenTarget(sourceToken))
                 dispatch(setSourcePriceData(targetPriceData))
                 dispatch(setTargetPriceData(sourcePriceData))
+                dispatch(updateSourceAmount(targetAmount))
+                dispatch(updateTargetAmount(sourceAmount))
             }}>
                 <ArrowDown height={iconSize} width={iconSize} />
             </BasicNeuButton>
@@ -60,7 +65,7 @@ const SwapDefaultView = ({ setSelectedSwapSide, setView }: SwapDefaultViewProps)
         <div className="flex justify-around items-center gap-3 w-full">
             <SwapInput type={TARGET} />
             <TokenSelectButton
-                selectedToken={targetToken}
+                selectedToken={targetToken?.symbol as Token}
                 onClick={() => {
                     setSelectTokenView(TARGET)
                 }}
