@@ -1,26 +1,43 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --primary-light: #8abdff;
+  --primary: #6d5dfc;
+  --primary-dark: #5b0eeb;
+  
+  --white: #FFFFFF;
+  --greyLight-1: #E4EBF5;
+  --greyLight-2: #c8d0e7;
+  --greyLight-3: #bec8e4;
+  --greyDark: #9baacf;
+
+  --background: var(--greyLight-1);
+  --foreground: var(--greyLight-2);
+
+  --shadow: 0.3rem 0.3rem 0.6rem var(--greyLight-2), -0.2rem -0.2rem 0.5rem var(--white);
+  --inner-shadow: inset 0.2rem 0.2rem 0.5rem var(--greyLight-2), inset -0.2rem -0.2rem 0.5rem var(--white);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+@theme {
+  --color-background: var(--greyLight-1);
+  --color-foreground: var(--greyLight-2);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --shadow-default: var(--shadow);
+  --shadow-set: var(--inner-shadow);
+  --color-greyLight-100: var(--greyLight-1);
+  --color-greyLight-500: var(--greyLight-2);
+  --color-greyLight-900: var(--greyLight-3);
+  --color-primary-light: var(--primary-light);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
