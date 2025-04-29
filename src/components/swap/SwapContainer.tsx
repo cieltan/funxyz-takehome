@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import SwapDefaultView from "./SwapDefaultView";
 import SwapSelectTokenView from "./SwapSelectTokenView";
 import { SwapContainerView, SwapSide } from "@/utils/const"
@@ -46,13 +46,6 @@ const SwapContainer = () => {
         }
     }
 
-    const renderFallback = () => {
-        return (
-            <div className="flex flex-col relative bg-background shadow-[0.8rem_0.8rem_1.4rem_var(--foreground),-0.2rem_-0.2rem_1.8rem_var(--white)] p-3 sm:p-4 md:p-6 rounded-lg gap-3 sm:gap-4 w-full">
-            </div>
-        )
-    }
-
     useEffect(() => {
         if (sourceData.tokenInfo && sourceData.price) {
             dispatch(setTokenSource(sourceData.tokenInfo));
@@ -68,11 +61,9 @@ const SwapContainer = () => {
     }, [targetData, dispatch]);
 
     return (
-        <Suspense fallback={renderFallback()}>
-            <div className="flex flex-col relative bg-background shadow-[0.8rem_0.8rem_1.4rem_var(--foreground),-0.2rem_-0.2rem_1.8rem_var(--white)] p-3 sm:p-4 md:p-6 rounded-lg gap-3 sm:gap-4 w-full">
-                {renderView()}
-            </div>
-        </Suspense>
+        <div className="flex flex-col relative bg-background shadow-[0.8rem_0.8rem_1.4rem_var(--foreground),-0.2rem_-0.2rem_1.8rem_var(--white)] p-3 sm:p-4 md:p-6 rounded-lg gap-3 sm:gap-4 w-full">
+            {renderView()}
+        </div>
     )
 }
 
